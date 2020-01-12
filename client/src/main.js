@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 require('../node_modules/bootstrap/dist/css/bootstrap.css')
 
 Vue.config.productionTip = false

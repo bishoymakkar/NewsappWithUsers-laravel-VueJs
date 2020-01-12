@@ -21,7 +21,8 @@ Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@login');
 Route::get('profile', 'UserController@getAuthenticatedUser');
 Route::post('updatefav', 'UserController@updatefav');
-
+Route::post('removefav', 'UserController@removefav');
+Route::post('checkfav', 'UserController@checkfav');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

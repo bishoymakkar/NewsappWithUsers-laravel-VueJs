@@ -8,9 +8,11 @@
     <div class="collapse navbar-collapse justify-content-md-center" id="navbarsExample10">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link class="nav-link" to="/">Home</router-link>
+          <router-link class="nav-link" to="/BussinessNews">Business News</router-link>
         </li>
-
+        <li class="nav-item">
+          <router-link class="nav-link" to="/SportNews">Sports News</router-link>
+        </li>
         <li v-if="auth==''" class="nav-item">
           <router-link class="nav-link" to="/login">Login</router-link>
         </li>
@@ -31,6 +33,7 @@
 <script>
 
 import EventBus from './EventBus'
+import router from '../router'
 
 EventBus.$on('logged-in', test => {
   console.log(test)
@@ -46,6 +49,7 @@ export default {
   methods: {
     logout () {
       localStorage.removeItem('usertoken')
+      router.push({ path: '/Login' })
     }
 
   },

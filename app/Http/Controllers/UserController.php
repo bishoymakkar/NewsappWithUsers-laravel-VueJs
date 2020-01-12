@@ -3,19 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use App\Post;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 //use JWTAuth;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Facades\JWTFactory;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Tymon\JWTAuth\PayloadFactory;
-use Tymon\JWTAuth\JWTManager as JWT;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -26,7 +20,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'favourites' => 'array'
+            'favourites' => 'array',
         ]);
 
         if ($validator->fails()) {
@@ -37,7 +31,7 @@ class UserController extends Controller
             'name' => $request->json()->get('name'),
             'email' => $request->json()->get('email'),
             'password' => Hash::make($request->json()->get('password')),
-            'favourites' => $request->json()->get('favourites')
+            'favourites' => $request->json()->get('favourites'),
         ]);
 
         $token = JWTAuth::fromUser($user);
@@ -60,8 +54,6 @@ class UserController extends Controller
         return response()->json(compact('token'));
     }
 
-
-
     public function getAuthenticatedUser()
     {
         try {
@@ -78,16 +70,69 @@ class UserController extends Controller
         return response()->json(compact('user'));
     }
 
-    public function updatefav(Request $request,User $user)
+    public function updatefav(Request $request, User $user)
     {
-            $ob = $request->get('headline');
-            $userId = $request->get('user_id');
-            $user = User::find($userId);
-            $fav = $user->favourites;
-            array_push($fav, $ob);
-            $user->favourites = $fav;
+        $ob = $request->get('headline');
+        $userId = $request->get('user_id');
+        $user = User::find($userId);
+        $flag = 0;
+        $fav = $user->favourites;
+        for ($i = 0; $i < count($fav); $i++) {
+            if ($fav[$i] == $ob) {
+                $flag = 1;
+                break;
+            }
+        }
+        if ($flag == 0) {
+            if ($user->favourites != null) {
 
+                array_push($fav, $ob);
+                $user->favourites = $fav;
+            } else {
+                $fav = [];
+                array_push($fav, $ob);
+                $user->favourites = $fav;
+            }
             $user->save();
-        
+        } else {
+            return "Match objects";
+        }
+    }
+    public function checkfav(Request $request, User $user)
+    {
+        $ob = $request->get('headline');
+        $userId = $request->get('user_id');
+        $user = User::find($userId);
+        $flag = 0;
+        $fav = $user->favourites;
+        for ($i = 0; $i < count($fav); $i++) {
+            if ($fav[$i] == $ob) {
+                $flag = 1;
+                break;
+            }
+        }
+        if ($flag == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function removefav(Request $request, User $user)
+    {
+        $ob = $request->get('headline');
+        $userId = $request->get('user_id');
+        $user = User::find($userId);
+        $flag = 0;
+        $fav = $user->favourites;
+        for ($i = 0; $i < count($fav); $i++) {
+            if ($fav[$i] == $ob) {
+                $flag = $i;
+                break;
+            }
+        }
+        array_splice($fav, $flag, 1);
+        $user->favourites = $fav;
+        $user->save();
+        return $user;
     }
 }
